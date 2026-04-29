@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { EventSource } from 'react-native-sse';
+import EventSource from 'react-native-sse';
 import { connectChat } from '../services/sse-client';
 import { getSessionMessages } from '../services/api';
 import type { ChatMessage, LoadingPhase } from '../types/chat';
@@ -9,7 +9,8 @@ export function useChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | undefined>();
   const [error, setError] = useState<string | null>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const eventSourceRef = useRef<any>(null);
 
   const sendMessage = useCallback(
     async (content: string) => {
