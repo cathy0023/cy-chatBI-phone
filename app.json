@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "ChatBI",
+    "slug": "chatbi-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chatbi.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#4F46E5"
+      },
+      "package": "com.chatbi.mobile"
+    },
+    "extra": {
+      "apiBase": "http://localhost:3000"
+    }
+  }
+}
