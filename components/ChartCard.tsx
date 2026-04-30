@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { BarChart3, Table2, Maximize2 } from 'lucide-react-native';
 import { ChartWebView } from './ChartWebView';
 import { DataTable } from './DataTable';
+import { colors } from '../theme/colors';
 
 type ChartCardProps = {
   chartHtml?: string;
@@ -32,29 +33,33 @@ export function ChartCard({
             style={[styles.tab, view === 'chart' && styles.tabActive]}
             onPress={() => setView('chart')}
           >
-            <BarChart3 size={14} color={view === 'chart' ? '#4F46E5' : '#888'} />
+            <BarChart3 size={14} color={view === 'chart' ? colors.primary : colors.textSecondary} />
             <Text style={[styles.tabText, view === 'chart' && styles.tabTextActive]}>
               图表
             </Text>
+            {view === 'chart' && <View style={styles.tabIndicator} />}
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tab, view === 'table' && styles.tabActive]}
             onPress={() => setView('table')}
           >
-            <Table2 size={14} color={view === 'table' ? '#4F46E5' : '#888'} />
+            <Table2 size={14} color={view === 'table' ? colors.primary : colors.textSecondary} />
             <Text style={[styles.tabText, view === 'table' && styles.tabTextActive]}>
               数据表
             </Text>
+            {view === 'table' && <View style={styles.tabIndicator} />}
           </TouchableOpacity>
         </View>
       )}
 
-      {view === 'chart' && hasChart && <ChartWebView html={chartHtml!} />}
-
-      {(view === 'table' || !hasChart) &&
-        hasData &&
-        records &&
-        columns && <DataTable records={records} columns={columns} />}
+      {/* 内嵌画布区域 — 深色背景让图表/表格有被包裹的层次感 */}
+      <View style={styles.chartBody}>
+        {view === 'chart' && hasChart && <ChartWebView html={chartHtml!} />}
+        {(view === 'table' || !hasChart) &&
+          hasData &&
+          records &&
+          columns && <DataTable records={records} columns={columns} />}
+      </View>
 
       {(hasChart || hasData) && (
         <View style={styles.footer}>
@@ -63,7 +68,7 @@ export function ChartCard({
           </Text>
           {onExpand && hasChart && (
             <TouchableOpacity onPress={onExpand} style={styles.expandBtn}>
-              <Maximize2 size={14} color="#4F46E5" />
+              <Maximize2 size={14} color={colors.primary} />
               <Text style={styles.expandText}>全屏查看</Text>
             </TouchableOpacity>
           )}
@@ -75,24 +80,25 @@ export function ChartCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderWidth: 0.5,
-    borderColor: '#e5e5e5',
-    borderRadius: 14,
+    backgroundColor: colors.chartBg,
+    borderWidth: 1,
+    borderColor: colors.chartBorder,
+    borderRadius: 16,
     overflow: 'hidden',
     maxWidth: '92%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowColor: '#60A5FA',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 8,
   },
   tabBar: {
     flexDirection: 'row',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#f0f0f0',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.chartBorder,
+    backgroundColor: colors.chartBg,
     gap: 6,
   },
   tab: {
@@ -102,21 +108,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'transparent',
   },
-  tabActive: { backgroundColor: '#EEF2FF' },
-  tabText: { fontSize: 11, color: '#888' },
-  tabTextActive: { color: '#4F46E5', fontWeight: '500' },
+  tabActive: { backgroundColor: colors.chartTabActive },
+  tabIndicator: {
+    position: 'absolute',
+    bottom: -9,
+    left: 10,
+    right: 10,
+    height: 2,
+    backgroundColor: colors.primary,
+  },
+  tabText: { fontSize: 11, color: colors.textSecondary },
+  tabTextActive: { color: colors.primary, fontWeight: '500' },
+  chartBody: {
+    backgroundColor: colors.chartAreaBg,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+  },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderTopWidth: 0.5,
-    borderTopColor: '#f0f0f0',
+    borderTopWidth: 1,
+    borderTopColor: colors.chartBorder,
   },
-  footerText: { fontSize: 11, color: '#bbb' },
+  footerText: { fontSize: 11, color: colors.textMuted },
   expandBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  expandText: { fontSize: 11, color: '#4F46E5', fontWeight: '500' },
+  expandText: { fontSize: 11, color: colors.primary, fontWeight: '500' },
 });

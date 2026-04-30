@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   FlatList,
@@ -8,10 +8,13 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Plus } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ArrowLeft } from 'lucide-react-native';
 import { SessionItem } from '../components/SessionItem';
 import { useChatContext } from '../context/ChatContext';
 import { getSessions, deleteSession } from '../services/api';
+import { colors } from '../theme/colors';
 import type { StackParamList } from '../navigation/types';
 import type { SessionInfo } from '../types/chat';
 
@@ -19,6 +22,7 @@ type SessionListNav = NativeStackNavigationProp<StackParamList, 'SessionList'>;
 
 export function SessionListScreen() {
   const navigation = useNavigation<SessionListNav>();
+  const insets = useSafeAreaInsets();
   const { sessionId, loadSessionMessages, clearMessages } =
     useChatContext();
   const [sessions, setSessions] = useState<SessionInfo[]>([]);
@@ -55,22 +59,6 @@ export function SessionListScreen() {
     }
   };
 
-  const handleNew = () => {
-    clearMessages();
-    navigation.navigate('Chat');
-  };
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={handleNew} style={styles.newBtn}>
-          <Plus size={16} color="#4F46E5" />
-          <Text style={styles.newBtnText}>新建</Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
-
   const renderItem = ({ item }: { item: SessionInfo }) => (
     <SessionItem
       session={item}
@@ -82,6 +70,25 @@ export function SessionListScreen() {
 
   return (
     <View style={styles.container}>
+      <LinearGradient
+        colors={['#0B1120', '#0D1B3E']}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Custom nav bar */}
+      <View style={[styles.navBar, { paddingTop: insets.top }]}>
+        <View style={styles.navContent}>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+          >
+            <ArrowLeft size={20} color={colors.textPrimary} />
+          </TouchableOpacity>
+          <Text style={styles.navTitle}>历史会话</Text>
+        </View>
+      </View>
+
       <FlatList
         data={sessions}
         renderItem={renderItem}
@@ -93,36 +100,48 @@ export function SessionListScreen() {
           </View>
         }
       />
-      <Text style={styles.footerHint}>最多保留 20 个会话</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
-  listContent: { paddingHorizontal: 16, paddingTop: 12, gap: 8 },
+  container: { flex: 1 },
+  navBar: {
+    backgroundColor: colors.navBg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.navBorder,
+  },
+  navContent: {
+    height: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.cardBg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    marginLeft: 12,
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 28,
+    gap: 10,
+  },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 100,
   },
-  emptyText: { fontSize: 14, color: '#999' },
-  newBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  newBtnText: { fontSize: 14, color: '#4F46E5', fontWeight: '600' },
-  footerHint: {
-    textAlign: 'center',
-    fontSize: 12,
-    color: '#ccc',
-    paddingVertical: 14,
-    paddingBottom: 32,
-  },
+  emptyText: { fontSize: 14, color: colors.textMuted },
 });

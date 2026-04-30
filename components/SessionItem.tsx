@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Alert,
 } from 'react-native';
 import { Trash2 } from 'lucide-react-native';
+import { colors } from '../theme/colors';
 import type { SessionInfo } from '../types/chat';
 
 type SessionItemProps = {
@@ -37,6 +38,8 @@ export function SessionItem({
   onSelect,
   onDelete,
 }: SessionItemProps) {
+  const [pressed, setPressed] = useState(false);
+
   const handleDelete = () => {
     Alert.alert('删除对话', '确定删除此对话？此操作不可恢复。', [
       { text: '取消', style: 'cancel' },
@@ -50,8 +53,14 @@ export function SessionItem({
 
   return (
     <TouchableOpacity
-      style={[styles.card, isActive && styles.cardActive]}
+      style={[
+        styles.card,
+        isActive && styles.cardActive,
+        pressed && styles.cardPressed,
+      ]}
       onPress={() => onSelect(session.id)}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
       activeOpacity={0.7}
     >
       <View style={styles.content}>
@@ -62,13 +71,8 @@ export function SessionItem({
           {session.message_count} 条消息 · {formatDate(session.created_at)}
         </Text>
       </View>
-      {isActive && (
-        <View style={styles.activeBadge}>
-          <Text style={styles.activeBadgeText}>当前</Text>
-        </View>
-      )}
       <TouchableOpacity onPress={handleDelete} style={styles.deleteBtn}>
-        <Trash2 size={16} color="#ccc" />
+        <Trash2 size={16} color={colors.textMuted} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -76,31 +80,39 @@ export function SessionItem({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.cardBg,
     borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-    elevation: 1,
+    borderWidth: 1,
+    borderColor: colors.sessionBorder,
     borderLeftWidth: 3,
     borderLeftColor: 'transparent',
   },
-  cardActive: { borderLeftColor: '#4F46E5' },
-  content: { flex: 1 },
-  title: { fontSize: 15, fontWeight: '600', color: '#111' },
-  meta: { fontSize: 12, color: '#999', marginTop: 4 },
-  activeBadge: {
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    marginRight: 8,
+  cardActive: {
+    borderLeftColor: colors.primary,
+    backgroundColor: colors.sessionActive,
   },
-  activeBadgeText: { fontSize: 11, color: '#4F46E5', fontWeight: '600' },
+  cardPressed: {
+    backgroundColor: colors.sessionActive,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  content: { flex: 1 },
+  title: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.textPrimary,
+  },
+  meta: {
+    fontSize: 12,
+    color: colors.textMuted,
+    marginTop: 4,
+  },
   deleteBtn: { padding: 8 },
 });

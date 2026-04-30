@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { colors } from '../theme/colors';
 
 const COLUMN_LABELS: Record<string, string> = {
   name: '姓名',
@@ -111,26 +112,26 @@ export function DataTable({ records, columns }: DataTableProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  row: { flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: '#f0f0f0' },
-  rowEven: { backgroundColor: '#fafafa' },
-  headerCell: { paddingHorizontal: 12, paddingVertical: 8, minWidth: 70 },
-  headerText: { fontSize: 12, fontWeight: '500', color: '#666' },
+  row: { flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: colors.chartBorder },
+  rowEven: { backgroundColor: colors.chartRowAlt },
+  headerCell: { paddingHorizontal: 12, paddingVertical: 8, minWidth: 70, backgroundColor: colors.chartHeaderBg },
+  headerText: { fontSize: 12, fontWeight: '500', color: colors.primary },
   cell: { paddingHorizontal: 12, paddingVertical: 6, minWidth: 70 },
-  cellText: { fontSize: 12, color: '#333' },
-  cellBold: { fontWeight: '600', color: '#4F46E5' },
+  cellText: { fontSize: 12, color: colors.textPrimary },
+  cellBold: { fontWeight: '600', color: colors.primary },
   pagination: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 8,
     borderTopWidth: 0.5,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: colors.chartBorder,
     marginTop: 4,
   },
-  pageInfo: { fontSize: 11, color: '#999' },
+  pageInfo: { fontSize: 11, color: colors.textMuted },
   pageButtons: { flexDirection: 'row', gap: 6 },
-  pageBtn: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 4, borderWidth: 0.5, borderColor: '#e0e0e0' },
+  pageBtn: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 4, borderWidth: 0.5, borderColor: colors.border },
   pageBtnDisabled: { opacity: 0.4 },
-  pageBtnText: { fontSize: 11, color: '#333' },
-  pageBtnTextDisabled: { color: '#999' },
+  pageBtnText: { fontSize: 11, color: colors.textPrimary },
+  pageBtnTextDisabled: { color: colors.textMuted },
 });

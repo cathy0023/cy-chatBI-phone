@@ -5,35 +5,46 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LinearGradient } from 'expo-linear-gradient';
 import { History } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChatContext } from '../context/ChatContext';
+import { EmptyState } from '../components/EmptyState';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { MessageItem } from '../components/MessageItem';
 import { ChatInput } from '../components/ChatInput';
+import { colors } from '../theme/colors';
 import type { StackParamList } from '../navigation/types';
 import type { ChatMessage } from '../types/chat';
 
 type ChatScreenNav = NativeStackNavigationProp<StackParamList, 'Chat'>;
 
+const LOGO_GRADIENT = [colors.primary, colors.secondary] as const;
+
 export function ChatScreen() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<ChatScreenNav>();
   const {
     messages,
     isLoading,
     error,
     sendMessage,
-    clearMessages,
     sessionId,
   } = useChatContext();
-  const flatListRef = useRef<FlatList>(null);
+  const flatListRef = useRef<FlatList<ChatMessage>>(null);
 
   useEffect(() => {
     if (messages.length > 0) {
+      // Wait for content + animations to finish before scrolling
+      // MessageItem animations can take up to 300ms (stagger delay + duration)
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+      }, 400);
     }
   }, [messages]);
 
@@ -48,16 +59,39 @@ export function ChatScreen() {
     }
   };
 
-  const renderItem = ({ item }: { item: ChatMessage }) => (
-    <MessageItem message={item} onExpandChart={handleExpandChart} />
+  const renderItem = ({ item, index }: { item: ChatMessage; index: number }) => (
+    <MessageItem message={item} onExpandChart={handleExpandChart} index={index} />
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.navBar}>
+    <LinearGradient
+      colors={[colors.backgroundDeep, colors.backgroundNight]}
+      style={styles.root}
+    >
+      {/* Glassmorphism Nav Bar */}
+      <View
+        style={[
+          styles.navBar,
+          {
+            paddingTop: insets.top,
+            backgroundColor: colors.navBg,
+            borderBottomColor: colors.navBorder,
+          },
+        ]}
+      >
         <View style={styles.navLeft}>
-          <View style={styles.logo}>
-            <Text style={styles.logoText}>C</Text>
+          {/* Logo with gradient ring */}
+          <View style={styles.logoOuter}>
+            <LinearGradient
+              colors={LOGO_GRADIENT}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.logoRing}
+            >
+              <View style={styles.logoInner}>
+                <Text style={styles.logoText}>C</Text>
+              </View>
+            </LinearGradient>
           </View>
           <View>
             <Text style={styles.navTitle}>ChatBI</Text>
@@ -65,89 +99,141 @@ export function ChatScreen() {
           </View>
         </View>
         <TouchableOpacity
-          style={styles.historyBtn}
+          style={[styles.historyBtn, { backgroundColor: colors.cardBg }]}
           onPress={() => navigation.navigate('SessionList')}
+          activeOpacity={0.7}
         >
-          <History size={22} color="#666" />
+          <History size={22} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
+      {/* Error bar */}
       {error && (
         <View style={styles.errorBar}>
           <Text style={styles.errorText}>{error}</Text>
         </View>
       )}
 
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        style={styles.messageList}
-        contentContainerStyle={
-          messages.length === 0 ? styles.emptyContainer : undefined
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>
-              开始对话，提出您的数据分析问题
-            </Text>
-          </View>
-        }
-      />
+      {/* Loading bar */}
+      {isLoading && (
+        <View style={styles.loadingBar}>
+          <LoadingIndicator />
+        </View>
+      )}
 
-      <ChatInput onSend={sendMessage} disabled={isLoading} />
-    </View>
+      {/* Messages */}
+      <KeyboardAvoidingView
+        style={styles.messageArea}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={0}
+      >
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          style={styles.messageList}
+          contentContainerStyle={
+            messages.length === 0 ? styles.emptyContainer : styles.listContent
+          }
+          ListEmptyComponent={<EmptyState />}
+          showsVerticalScrollIndicator={false}
+        />
+        <ChatInput onSend={sendMessage} />
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fafafa' },
+  root: {
+    flex: 1,
+  },
   navBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 52,
     paddingBottom: 12,
-    backgroundColor: '#fff',
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#e5e5e5',
+    borderBottomWidth: 1,
   },
-  navLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  logo: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: '#4F46E5',
+  navLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logoOuter: {
+    width: 40,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  logoText: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  navTitle: { fontSize: 18, fontWeight: '700', color: '#111' },
-  navSubtitle: { fontSize: 12, color: '#999' },
+  logoRing: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 2,
+  },
+  logoInner: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    backgroundColor: colors.backgroundDeep,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: colors.primary,
+  },
+  navTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  navSubtitle: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
   historyBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f0f0f0',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 0.5,
-    borderColor: '#e0e0e0',
   },
   errorBar: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: 'rgba(248,113,113,0.12)',
     paddingHorizontal: 16,
     paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(248,113,113,0.2)',
   },
-  errorText: { fontSize: 13, color: '#dc2626' },
-  messageList: { flex: 1 },
-  emptyContainer: { flex: 1 },
-  emptyState: {
+  errorText: {
+    fontSize: 13,
+    color: colors.error,
+  },
+  loadingBar: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.navBorder,
+  },
+  messageArea: {
+    flex: 1,
+  },
+  messageList: {
+    flex: 1,
+  },
+  emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  emptyText: { fontSize: 14, color: '#999' },
+  listContent: {
+    paddingVertical: 12,
+  },
 });

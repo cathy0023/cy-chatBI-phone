@@ -12,32 +12,27 @@ const Stack = createStackNavigator<StackParamList>();
 export function AppNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Chat">
+      <Stack.Navigator
+        initialRouteName="Chat"
+        screenOptions={{
+          headerShown: false,
+          cardStyle: { backgroundColor: '#0B1120' },
+        }}
+      >
         <Stack.Screen
           name="Chat"
           component={ChatScreen}
-          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SessionList"
           component={SessionListScreen}
-          options={{
-            title: '历史会话',
-            headerTintColor: '#111',
-            headerStyle: { backgroundColor: '#fff' },
-          }}
         />
         <Stack.Screen
           name="ChartDetail"
           component={ChartDetailScreen}
-          options={{
-            title: '图表详情',
-            headerTintColor: '#111',
-            headerStyle: { backgroundColor: '#fff' },
-          }}
         />
       </Stack.Navigator>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
     </NavigationContainer>
   );
 }

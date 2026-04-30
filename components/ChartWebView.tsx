@@ -1,6 +1,8 @@
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { StyleSheet } from 'react-native';
+import { API_BASE } from '../constants/api';
+import { colors } from '../theme/colors';
 
 type ChartWebViewProps = {
   html: string;
@@ -8,23 +10,40 @@ type ChartWebViewProps = {
 };
 
 export function ChartWebView({ html, height = 280 }: ChartWebViewProps) {
+  // Fix: replace percentage-based heights with explicit pixel value
+  // Handle both "height:100%" and "height: 100%" (with/without spaces)
+  const fixedHtml = html
+    .replace(/html\s*,\s*body\s*\{[^}]*height\s*:\s*100%/g, (match) =>
+      match.replace(/height\s*:\s*100%/, `height:${height}px`)
+    )
+    .replace(/#chart\s*\{[^}]*height\s*:\s*100%/g, (match) =>
+      match.replace(/height\s*:\s*100%/, `height:${height}px`)
+    );
+
   return (
-    <WebView
-      source={{ html }}
-      style={[styles.webview, { height }]}
-      scrollEnabled={false}
-      originWhitelist={['*']}
-      javaScriptEnabled
-      domStorageEnabled
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-    />
+    <View style={[styles.container, { height }]}>
+      <WebView
+        source={{ html: fixedHtml, baseUrl: `${API_BASE}/` }}
+        style={styles.webview}
+        scrollEnabled={false}
+        originWhitelist={['*']}
+        javaScriptEnabled
+        domStorageEnabled
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        mixedContentMode="always"
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  webview: {
+  container: {
     borderRadius: 12,
-    backgroundColor: '#fafafa',
+    backgroundColor: 'transparent',
+    overflow: 'hidden',
+  },
+  webview: {
+    flex: 1,
   },
 });
