@@ -11,7 +11,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
-import { History } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChatContext } from '../context/ChatContext';
 import { EmptyState } from '../components/EmptyState';
@@ -103,7 +103,7 @@ export function ChatScreen() {
           onPress={() => navigation.navigate('SessionList')}
           activeOpacity={0.7}
         >
-          <History size={22} color={colors.textSecondary} />
+          <Feather name="history" size={22} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 

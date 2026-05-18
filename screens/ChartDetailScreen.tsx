@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import type { RouteProp } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { ChartWebView } from '../components/ChartWebView';
@@ -35,7 +35,7 @@ export function ChartDetailScreen({ route, navigation }: ChartDetailProps) {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <ArrowLeft size={20} color={colors.textPrimary} />
+            <Feather name="arrow-left" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.navTitle}>图表详情</Text>
         </View>

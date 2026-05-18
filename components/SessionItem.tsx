@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { Trash2 } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import type { SessionInfo } from '../types/chat';
 
@@ -72,7 +72,7 @@ export function SessionItem({
         </Text>
       </View>
       <TouchableOpacity onPress={handleDelete} style={styles.deleteBtn}>
-        <Trash2 size={16} color={colors.textMuted} />
+        <Feather name="trash-2" size={16} color={colors.textMuted} />
       </TouchableOpacity>
     </TouchableOpacity>
   );

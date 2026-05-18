@@ -10,7 +10,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import { SessionItem } from '../components/SessionItem';
 import { useChatContext } from '../context/ChatContext';
 import { getSessions, deleteSession } from '../services/api';
@@ -83,7 +83,7 @@ export function SessionListScreen() {
             onPress={() => navigation.goBack()}
             activeOpacity={0.7}
           >
-            <ArrowLeft size={20} color={colors.textPrimary} />
+            <Feather name="arrow-left" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.navTitle}>历史会话</Text>
         </View>

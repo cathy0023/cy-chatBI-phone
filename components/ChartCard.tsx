@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { BarChart3, Table2, Maximize2 } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import { ChartWebView } from './ChartWebView';
 import { DataTable } from './DataTable';
 import { colors } from '../theme/colors';
@@ -33,7 +33,7 @@ export function ChartCard({
             style={[styles.tab, view === 'chart' && styles.tabActive]}
             onPress={() => setView('chart')}
           >
-            <BarChart3 size={14} color={view === 'chart' ? colors.primary : colors.textSecondary} />
+            <Feather name="bar-chart-2" size={14} color={view === 'chart' ? colors.primary : colors.textSecondary} />
             <Text style={[styles.tabText, view === 'chart' && styles.tabTextActive]}>
               图表
             </Text>
@@ -43,7 +43,7 @@ export function ChartCard({
             style={[styles.tab, view === 'table' && styles.tabActive]}
             onPress={() => setView('table')}
           >
-            <Table2 size={14} color={view === 'table' ? colors.primary : colors.textSecondary} />
+            <Feather name="grid" size={14} color={view === 'table' ? colors.primary : colors.textSecondary} />
             <Text style={[styles.tabText, view === 'table' && styles.tabTextActive]}>
               数据表
             </Text>
@@ -68,7 +68,7 @@ export function ChartCard({
           </Text>
           {onExpand && hasChart && (
             <TouchableOpacity onPress={onExpand} style={styles.expandBtn}>
-              <Maximize2 size={14} color={colors.primary} />
+              <Feather name="maximize" size={14} color={colors.primary} />
               <Text style={styles.expandText}>全屏查看</Text>
             </TouchableOpacity>
           )}
